@@ -1,0 +1,39 @@
+services:
+    scssphp.cache:
+        public: true
+        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+        arguments:
+            - "scssphp"
+            - 0
+            - "%kernel.cache_dir%/scssphp"
+
+    scssphp.datacollector:
+        public: false
+        class: Armin\ScssphpBundle\DataCollector\ScssphpDataCollector
+        arguments:
+            - "@service_container"
+            - "@scssphp.cache"
+            - "@kernel"
+        tags:
+            -
+                name: data_collector
+                template: "@Scssphp/data_collector/template.html.twig"
+                id: scssphp.collector
+
+    scssphp.parser:
+        public: true
+        class: Armin\ScssphpBundle\Scss\Parser
+        arguments:
+            - "@service_container"
+            - "@request_stack"
+            - "@scssphp.cache"
+            - "@kernel"
+
+    twig.extension.assets:
+        public: false
+        class: Armin\ScssphpBundle\Twig\AssetExtension
+        arguments:
+            - "@assets.packages"
+            - "@scssphp.parser"
+        tags:
+            - { name: twig.extension }

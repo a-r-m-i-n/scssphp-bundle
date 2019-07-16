@@ -1,0 +1,27 @@
+{
+    "name": "armin/scssphp-bundle",
+    "version": "dev-master",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle to parse scss sources at runtime.",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Armin Vieweg",
+            "email": "armin@v.ieweg.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "ext-json": "*",
+        "symfony/framework-bundle": "^4.0",
+        "symfony/twig-bridge": "^4.0",
+        "symfony/asset": "^4.0",
+        "scssphp/scssphp": "1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Armin\\ScssphpBundle\\": "src/"
+        }
+    }
+}
