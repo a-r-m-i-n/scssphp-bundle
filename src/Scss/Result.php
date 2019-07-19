@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Armin\ScssphpBundle\Scss;
 
 use ScssPhp\ScssPhp\Compiler;
@@ -75,7 +75,7 @@ class Result
         return $this->successful;
     }
 
-    public function getExecutedAt() : \DateTime
+    public function getExecutedAt(): \DateTime
     {
         return $this->executedAt;
     }

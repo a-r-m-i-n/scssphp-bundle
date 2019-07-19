@@ -15,20 +15,18 @@ Also it provides a helpful debugger toolbar entry.
 ## Example Configuration
 
 ```yaml
-# config/packages/scssphp.yaml
 scssphp:
     enabled: true
     autoUpdate: true
     assets:
-        "css/styles.css":
+        "styles/main.css":
             src: "assets/main.scss"
-            outputFolder: "public"
             importPaths:
                 - "vendor/twbs/bootstrap/scss"
-            variables: []
-            formatter: ScssPhp\ScssPhp\Formatter\Crunched
-```
+            variables:
+                primary: '#ff0066'
 
+```
 
 
 ## TODO

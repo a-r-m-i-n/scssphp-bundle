@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Armin\ScssphpBundle\Scss;
 
 use Symfony\Component\Cache\Adapter\AdapterInterface;
@@ -42,7 +42,7 @@ class Parser
 
     public function parse(string $assetName): string
     {
-        $this->registerRequiredAssetInCurrentRequestAttributes($assetName);
+        $this->registerRequiredAsset($assetName);
         $assetConfig = $this->config['assets'][$assetName];
 
         $job = new Job($assetName, $assetConfig, $this->kernel->getProjectDir());
@@ -64,7 +64,7 @@ class Parser
                     $result = $job->execute();
                     $cacheItem->set($result);
                     $this->cache->save($cacheItem);
-                    $this->registerBuiltAssetInCurrentRequestAttributes($assetName);
+                    $this->registerBuiltAsset($assetName);
                 }
                 return $assetName;
             }
@@ -75,7 +75,7 @@ class Parser
         $cacheItem->set($result);
         $this->cache->save($cacheItem);
         $this->cache->commit();
-        $this->registerBuiltAssetInCurrentRequestAttributes($assetName);
+        $this->registerBuiltAsset($assetName);
         return $assetName;
     }
 
@@ -95,7 +95,7 @@ class Parser
         return $result->getJob()->getConfiguration() !== $assetConfiguration;
     }
 
-    protected function registerRequiredAssetInCurrentRequestAttributes(string $path) : void
+    protected function registerRequiredAsset(string $path): void
     {
         $requiredAssets = $this->request->attributes->get('requiredAssets', []);
         if (!in_array($path, $requiredAssets, true)) {
@@ -104,7 +104,7 @@ class Parser
         $this->request->attributes->set('requiredAssets', $requiredAssets);
     }
 
-    protected function registerBuiltAssetInCurrentRequestAttributes(string $path) : void
+    protected function registerBuiltAsset(string $path): void
     {
         $builtAssets = $this->request->attributes->get('builtAssets', []);
         if (!in_array($path, $builtAssets, true)) {
@@ -115,7 +115,12 @@ class Parser
 
     public static function makeCacheKey(string $assetName): string
     {
-        return self::CACHE_KEY_PREFIX . preg_replace('/[^A-Z0-9]/i', '_', $assetName);
+        return self::CACHE_KEY_PREFIX . self::sanitizeAssetName($assetName);
+    }
+
+    public static function sanitizeAssetName(string $assetName): string
+    {
+        return preg_replace('/[^A-Z0-9]/i', '_', $assetName);
     }
 
     public function isEnabled(): bool

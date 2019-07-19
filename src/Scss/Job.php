@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Armin\ScssphpBundle\Scss;
 
 use ScssPhp\ScssPhp\Compiler;
@@ -63,7 +63,7 @@ class Job
         return realpath($src);
     }
 
-    public function getDestinationPath() : string
+    public function getDestinationPath(): string
     {
         return $this->destinationPath;
     }
@@ -141,7 +141,7 @@ class Job
 
     public function getSanitizedAssetName(): string
     {
-        return preg_replace('/[^A-Z0-9]/i', '_', $this->getAssetName());
+        return Parser::sanitizeAssetName($this->getAssetName());
     }
 
     public function getConfiguration(): array
