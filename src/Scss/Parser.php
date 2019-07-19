@@ -40,16 +40,21 @@ class Parser
         return array_key_exists($assetName, $this->config['assets']);
     }
 
-    public function parse(string $assetName): string
+    public function makeJob(string $assetName): Job
+    {
+        return new Job($assetName, $this->config['assets'][$assetName], $this->kernel->getProjectDir());
+    }
+
+    public function parse(string $assetName, bool $force = false): string
     {
         $this->registerRequiredAsset($assetName);
         $assetConfig = $this->config['assets'][$assetName];
 
-        $job = new Job($assetName, $assetConfig, $this->kernel->getProjectDir());
+        $job = $this->makeJob($assetName);
         $resultCacheKey = self::makeCacheKey($assetName);
         $cacheItem = $this->cache->getItem($resultCacheKey);
 
-        if (!file_exists($job->getDestinationPath())) {
+        if ($force || !file_exists($job->getDestinationPath())) {
             if ($cacheItem->isHit()) {
                 $cacheItem->set(null);
                 $this->cache->save($cacheItem);
@@ -74,7 +79,6 @@ class Parser
         $result = $job->execute();
         $cacheItem->set($result);
         $this->cache->save($cacheItem);
-        $this->cache->commit();
         $this->registerBuiltAsset($assetName);
         return $assetName;
     }
@@ -97,25 +101,40 @@ class Parser
 
     protected function registerRequiredAsset(string $path): void
     {
-        $requiredAssets = $this->request->attributes->get('requiredAssets', []);
-        if (!in_array($path, $requiredAssets, true)) {
-            $requiredAssets[] = $path;
+        if ($this->request) {
+            $requiredAssets = $this->request->attributes->get('requiredAssets', []);
+            if (!in_array($path, $requiredAssets, true)) {
+                $requiredAssets[] = $path;
+            }
+            $this->request->attributes->set('requiredAssets', $requiredAssets);
         }
-        $this->request->attributes->set('requiredAssets', $requiredAssets);
     }
 
     protected function registerBuiltAsset(string $path): void
     {
-        $builtAssets = $this->request->attributes->get('builtAssets', []);
-        if (!in_array($path, $builtAssets, true)) {
-            $builtAssets[] = $path;
+        if ($this->request) {
+            $builtAssets = $this->request->attributes->get('builtAssets', []);
+            if (!in_array($path, $builtAssets, true)) {
+                $builtAssets[] = $path;
+            }
+            $this->request->attributes->set('builtAssets', $builtAssets);
         }
-        $this->request->attributes->set('builtAssets', $builtAssets);
     }
 
-    public static function makeCacheKey(string $assetName): string
+    public function isEnabled(): bool
     {
-        return self::CACHE_KEY_PREFIX . self::sanitizeAssetName($assetName);
+        return $this->config['enabled'];
+    }
+
+    public function getConfiguration(): array
+    {
+        return $this->config;
+    }
+
+    public function getResult(string $assetName): ?Result
+    {
+        $cacheItem = $this->cache->getItem(self::makeCacheKey($assetName));
+        return $cacheItem->get();
     }
 
     public static function sanitizeAssetName(string $assetName): string
@@ -123,8 +142,8 @@ class Parser
         return preg_replace('/[^A-Z0-9]/i', '_', $assetName);
     }
 
-    public function isEnabled(): bool
+    public static function makeCacheKey(string $assetName): string
     {
-        return $this->config['enabled'];
+        return self::CACHE_KEY_PREFIX . self::sanitizeAssetName($assetName);
     }
 }

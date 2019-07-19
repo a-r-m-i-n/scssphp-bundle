@@ -7,8 +7,8 @@ of Node.js and npm!
 The ScssPHP bundle recognizes changes in SCSS source files (or Symfony configuration) and only re-compiles
 those changes.  
 
-Also it provides a helpful debugger toolbar entry.
-
+Also it provides a helpful debugger toolbar entry and a command which allows you 
+to compile the SCSS sources from CLI.
 
 
 
@@ -31,6 +31,5 @@ scssphp:
 
 ## TODO
 
-- Provide command to build scss files from CLI
 - Add icon (for profiler)
 - Write README

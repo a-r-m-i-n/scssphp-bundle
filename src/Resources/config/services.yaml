@@ -29,6 +29,15 @@ services:
             - "@scssphp.cache"
             - "@kernel"
 
+    scssphp.command.compile:
+        public: false
+        class: Armin\ScssphpBundle\Command\CompileCommand
+        arguments:
+            - "scssphp:compile"
+            - "@scssphp.parser"
+        tags:
+            - { name: console.command }
+
     twig.extension.assets:
         public: false
         class: Armin\ScssphpBundle\Twig\AssetExtension
