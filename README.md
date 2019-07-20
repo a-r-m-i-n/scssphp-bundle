@@ -10,6 +10,8 @@ and only re-compiles those files.
 Also it provides a helpful debugger toolbar entry and a command which allows you 
 to compile the SCSS sources from CLI.
 
+It is released under MIT license.
+
 
 ## Features
 
@@ -65,8 +67,7 @@ To install the scssphp-bundle you can just use composer:
 $ composer require armin/scssphp-bundle
 ``` 
 
-The bundle also ships a [Symfony Flex Recipe](https://github.com/symfony/recipes-contrib/tree/master/armin/scssphp-bundle/1.0), 
-with `scss` or `scssphp` alias.
+The bundle also ships a [Symfony Flex Recipe](https://github.com/symfony/recipes-contrib/tree/master/armin/scssphp-bundle/1.0).
 
 
 ## Configuration

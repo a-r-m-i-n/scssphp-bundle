@@ -3,7 +3,7 @@
     "version": "dev-master",
     "type": "symfony-bundle",
     "description": "Symfony bundle to parse scss sources at runtime.",
-    "license": "GPL-2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Armin Vieweg",
@@ -22,6 +22,11 @@
     "autoload": {
         "psr-4": {
             "Armin\\ScssphpBundle\\": "src/"
+        }
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": "true"
         }
     }
 }
