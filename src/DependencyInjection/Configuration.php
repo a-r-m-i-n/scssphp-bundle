@@ -60,7 +60,11 @@ class Configuration implements ConfigurationInterface
                                 ->values([
                                     Expanded::class, Nested::class, Compressed::class, Compact::class, Crunched::class
                                 ])
-                                ->defaultValue(Nested::class)
+                                ->defaultValue(Crunched::class)
+                            ->end()
+                            ->booleanNode('sourceMap')
+                                ->info('When enabled, the CSS file contains inline sourceMap comments.')
+                                ->defaultFalse()
                             ->end()
                         ->end()
                     ->end() // prototype

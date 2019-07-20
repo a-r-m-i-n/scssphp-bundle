@@ -81,8 +81,9 @@ class Job
         $compiler->setImportPaths($this->getImportPaths());
         $compiler->setVariables($this->configuration['variables'] ?? []);
         $compiler->setFormatter($this->configuration['formatter'] ?? Crunched::class);
-        // TODO: Add sourceMap options
-
+        if ($this->configuration['sourceMap']) {
+            $compiler->setSourceMap(Compiler::SOURCE_MAP_INLINE);
+        }
 
         $result = new Result($this);
 

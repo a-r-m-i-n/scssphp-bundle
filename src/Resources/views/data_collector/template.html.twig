@@ -108,7 +108,9 @@
         <thead>
             <tr>
                 <th>Asset</th>
-                <th>Source</th>
+                <th>File size</th>
+                <th>Entry point</th>
+                <th>Source Map</th>
                 <th title="When the asset has been built at">Last build</th>
                 <th>Status</th>
                 <th title="Time it took to compile SCSS sources">Duration</th>
@@ -122,12 +124,16 @@
 
             <tr class="{{ result.isSuccessful ? '' : 'no-bottom-border bg-error' }} {{ assetRequired ? '' : 'bg-gray' }}">
                 <td>
-                    <span title="{{ result.job.destinationPath }}">{{ result.job.assetName }}</span>
+                    <span title="{{ result.job.destinationPath }}">
+                        <a href="/{{ result.job.assetName }}" target="_blank">{{ result.job.assetName }}</a>
+                    </span>
                 </td>
+                <td>{{ (result.compiledSize / 1024) | round(1) }} KB</td>
                 <td>
                     <span title="{{ result.job.sourceFilePath }}">{{ result.job.sourceFileName }}</span>
-                    <span title="Amount of parsed files">(<b>{{ result.parsedFiles | length }}</b>)</span>
+                    <span title="Amount of imported files">(<b>{{ result.parsedFiles | length }}</b>)</span>
                 </td>
+                <td>{{ result.job.configuration.sourceMap ? 'Yes' : 'No' }}</td>
                 <td>{{ result.executedAt | date }}</td>
                 <td>
                     {% if result.isSuccessful %}
@@ -146,14 +152,14 @@
 
             {% if result.isSuccessful == false %}
                 <tr class="bg-error error-line">
-                    <td colspan="7">
+                    <td colspan="9">
                         <span class="error-message">{{ result.errorMessage }}</span>
                     </td>
                 </tr>
             {% endif %}
 
             <tr id="details_{{ result.job.sanitizedAssetName }}" class="hidden no-top-border {{ assetRequired ? '' : 'bg-gray' }}">
-                <td colspan="7">
+                <td colspan="9">
                     {{ dump(result) }}
                 </td>
             </tr>

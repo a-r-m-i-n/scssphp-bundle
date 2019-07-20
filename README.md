@@ -21,6 +21,7 @@ scssphp:
     assets:
         "styles/main.css":
             src: "assets/main.scss"
+            sourceMap: true
             importPaths:
                 - "vendor/twbs/bootstrap/scss"
             variables:
