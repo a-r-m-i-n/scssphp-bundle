@@ -66,6 +66,10 @@ class Configuration implements ConfigurationInterface
                                 ->info('When enabled, the CSS file contains inline sourceMap comments.')
                                 ->defaultFalse()
                             ->end()
+                            ->booleanNode('appendTimestamp')
+                                ->info('When enabled, the timestamp of the asset, will be appended as query string.')
+                                ->defaultTrue()
+                            ->end()
                         ->end()
                     ->end() // prototype
                 ->end() // /assets

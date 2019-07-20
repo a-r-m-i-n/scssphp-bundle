@@ -20,7 +20,12 @@ class AssetExtension extends \Symfony\Bridge\Twig\Extension\AssetExtension
     public function getAssetUrl($path, $packageName = null)
     {
         if ($this->scssParser->isEnabled() && $this->scssParser->isConfigured($path)) {
-            return $this->scssParser->parse($path);
+            $assetPath = $this->scssParser->parse($path);
+            $result = $this->scssParser->getResult($path);
+            if ($result && $result->getJob()->getConfiguration()['appendTimestamp']) {
+                return $assetPath . '?' . filemtime($result->getJob()->getDestinationPath());
+            }
+            return $assetPath;
         }
         return parent::getAssetUrl($path, $packageName);
     }

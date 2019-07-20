@@ -104,11 +104,12 @@ class Parser
         }
     }
 
-    private function compileScss(Job $job, CacheItem $cacheItem): void
+    private function compileScss(Job $job, CacheItem $cacheItem): Result
     {
-        $cacheItem->set($job->execute());
+        $cacheItem->set($result = $job->execute());
         $this->cache->save($cacheItem);
         $this->registerBuiltAsset($job->getAssetName());
+        return $result;
     }
 
     private function registerBuiltAsset(string $path): void
