@@ -32,5 +32,4 @@ scssphp:
 
 ## TODO
 
-- Add icon (for profiler)
 - Write README

@@ -62,9 +62,7 @@ class Parser
             }
         } else {
             // Check if there is a cached job (if autoUpdate is enabled)
-            if ($this->config['autoUpdate'] && $cacheItem->isHit()) {
-                /** @var Result $cachedResult */
-                $cachedResult = $cacheItem->get();
+            if ($this->config['autoUpdate'] && $cachedResult = $cacheItem->get()) {
                 if ($this->checkForUpdates($cachedResult, $assetConfig)) {
                     $this->compileScss($job, $cacheItem);
                 }
@@ -77,6 +75,10 @@ class Parser
 
     private function checkForUpdates(Result $result, array $assetConfiguration)
     {
+        if (!$result->isSuccessful()) {
+            return true;
+        }
+
         // Check parsed files
         foreach ($result->getParsedFiles() as $filePath => $lastModificationTimestamp) {
             if (!file_exists($filePath)) {

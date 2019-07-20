@@ -2,29 +2,39 @@
 
 {% block toolbar %}
     {% if collector.hasConfig() %}
+        {% set status_color = collector.hasErrors() ? 'red' : '' %}
+
         {% set icon %}
-            <span class="sf-toolbar-label">ScssPHP</span>
-            <span class="sf-toolbar-value sf-toolbar-status" style="{{ collector.hasErrors() ? 'background-color: #f44;' : '' }}">{{collector.getResults()|length}}</span>
+
+            {% set icon_fill_color = profiler_markup_version == 1 ? '#222' : '#AAA' %}
+            {% set icon_height = profiler_markup_version == 1 ? '28' : '24' %}
+            <span class="icon">{{ include('@Scssphp/data_collector/scss-logo.svg.twig', { fill_color: icon_fill_color, height: icon_height }) }}</span>
+            <span class="sf-toolbar-value">{{ collector.getResults()|length }}</span>
+            <span class="sf-toolbar-label">{{ collector.getResults()|length == 1 ? 'Asset' : 'Assets' }}</span>
         {% endset %}
 
         {% set text %}
             <div class="sf-toolbar-info-piece">
-                <b>Managed assets</b>
+                <b>Managed SCSS assets</b>
                 <span class="sf-toolbar-status">{{collector.getResults()|length}}</span>
             </div>
             <div class="sf-toolbar-info-piece">
                 <b>Assets with errors</b>
                 <span class="sf-toolbar-status" style="{{ collector.hasErrors() ? 'background-color: #f44;' : '' }}">{{collector.getResultsWithErrors()|length}}</span>
             </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Assets compiled</b>
+                <span class="sf-toolbar-status">{{ collector.builtAssets|length }}</span>
+            </div>
         {% endset %}
 
-        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { 'link': true }) }}
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { 'link': true, 'status': status_color }) }}
     {% endif %}
 {% endblock %}
 
 {% block menu %}
-    <span class="label">
-        <span class="icon">-</span>
+    <span class="label label-status-{{ collector.hasErrors() ? 'error' }} {{ collector.config.enabled is same as (false) or collector.config.assets|length == 0 ? 'disabled' }}">
+        <span class="icon">{{ include('@Scssphp/data_collector/scss-logo.svg.twig', { height: 32 }) }}</span>
         <strong>ScssPHP</strong>
     </span>
 {% endblock %}
@@ -57,6 +67,11 @@
         .error-line td {
             padding-top: 0;
         }
+        table tbody tr td svg {
+            margin: 0 0 -3px;
+            height: 14px !important;
+            width: 14px !important;
+        }
     </style>
 
 
@@ -79,31 +94,50 @@
     </div>
 
     <h3>Configured Assets</h3>
-    {{ dump(collector.config.assets) }}
+    {% if collector.config.assets|length == 0 %}
+        <div class="empty">
+            <p>There is no asset configured.</p>
+        </div>
+    {% else %}
+        {{ dump(collector.config.assets) }}
+    {% endif %}
 
 
-    <h3>Required assets <small>during request</small></h3>
-    <table>
-        <thead>
-        <tr>
-            <th>Required asset</th>
-            <th>Existing</th>
-            <th>Built</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for asset,info in collector.requiredAssets %}
+    <h3>Required assets <small>during this request</small></h3>
+    {% if collector.requiredAssets|length == 0 %}
+        <div class="empty">
+            <p>No assets required during current request. Did you forget to use asset helper in your twig templates?</p>
+        </div>
+    {% else %}
+        <table>
+            <thead>
             <tr>
-                <td>{{ asset }}</td>
-                <td>{{ info.existed ? 'Yes' : 'No' }}</td>
-                <td>{{ info.built ? 'Yes' : 'No' }}</td>
+                <th>Required asset</th>
+                <th>Existing</th>
+                <th>Built</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+            {% for asset,info in collector.requiredAssets %}
+                <tr>
+                    <td>{{ asset }}</td>
+                    <td>
+                        {{ include('@WebProfiler/Icon/' ~ (info.existed ? 'yes' : 'no') ~ '.svg') }}
+                    </td>
+                    <td>{{ include('@WebProfiler/Icon/' ~ (info.built ? 'yes' : 'no') ~ '.svg') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 
     <h3>Recent builds</h3>
+
+    {% if collector.getResults()|length == 0 %}
+        <div class="empty">
+            <p>No recent builds found in cache.</p>
+        </div>
+    {% else %}
     <table>
         <thead>
             <tr>
@@ -133,7 +167,7 @@
                     <span title="{{ result.job.sourceFilePath }}">{{ result.job.sourceFileName }}</span>
                     <span title="Amount of imported files">(<b>{{ result.parsedFiles | length }}</b>)</span>
                 </td>
-                <td>{{ result.job.configuration.sourceMap ? 'Yes' : 'No' }}</td>
+                <td>{{ include('@WebProfiler/Icon/' ~ (result.job.configuration.sourceMap ? 'yes' : 'no') ~ '.svg') }}</td>
                 <td>{{ result.executedAt | date }}</td>
                 <td>
                     {% if result.isSuccessful %}
@@ -167,7 +201,7 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% endif %}
 
     <h3>Additional Resources</h3>
     <ul>
