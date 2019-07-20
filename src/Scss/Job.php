@@ -101,7 +101,8 @@ class Job
 
         return $result->markAsSuccessful(
             $compiler,
-            microtime(true) - $timeTrackingStart
+            microtime(true) - $timeTrackingStart,
+            strlen($css)
         );
     }
 

@@ -3,6 +3,7 @@ namespace Armin\ScssphpBundle\Scss;
 
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -65,25 +66,16 @@ class Parser
                 /** @var Result $cachedResult */
                 $cachedResult = $cacheItem->get();
                 if ($this->checkForUpdates($cachedResult, $assetConfig)) {
-                    // Compile SCSS
-                    $result = $job->execute();
-                    $cacheItem->set($result);
-                    $this->cache->save($cacheItem);
-                    $this->registerBuiltAsset($assetName);
+                    $this->compileScss($job, $cacheItem);
                 }
                 return $assetName;
             }
         }
-
-        // Compile SCSS
-        $result = $job->execute();
-        $cacheItem->set($result);
-        $this->cache->save($cacheItem);
-        $this->registerBuiltAsset($assetName);
+        $this->compileScss($job, $cacheItem);
         return $assetName;
     }
 
-    protected function checkForUpdates(Result $result, array $assetConfiguration)
+    private function checkForUpdates(Result $result, array $assetConfiguration)
     {
         // Check parsed files
         foreach ($result->getParsedFiles() as $filePath => $lastModificationTimestamp) {
@@ -99,7 +91,7 @@ class Parser
         return $result->getJob()->getConfiguration() !== $assetConfiguration;
     }
 
-    protected function registerRequiredAsset(string $path): void
+    private function registerRequiredAsset(string $path): void
     {
         if ($this->request) {
             $requiredAssets = $this->request->attributes->get('requiredAssets', []);
@@ -110,7 +102,14 @@ class Parser
         }
     }
 
-    protected function registerBuiltAsset(string $path): void
+    private function compileScss(Job $job, CacheItem $cacheItem): void
+    {
+        $cacheItem->set($job->execute());
+        $this->cache->save($cacheItem);
+        $this->registerBuiltAsset($job->getAssetName());
+    }
+
+    private function registerBuiltAsset(string $path): void
     {
         if ($this->request) {
             $builtAssets = $this->request->attributes->get('builtAssets', []);

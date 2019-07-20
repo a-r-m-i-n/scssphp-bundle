@@ -45,6 +45,11 @@ class Result
      */
     private $assetExistedBefore;
 
+    /**
+     * @var int
+     */
+    private $compiledSize = 0;
+
     public function __construct(Job $job)
     {
         $this->job = $job;
@@ -52,10 +57,11 @@ class Result
         $this->executedAt = new \DateTime();
     }
 
-    public function markAsSuccessful(Compiler $compiler, float $duration): self
+    public function markAsSuccessful(Compiler $compiler, float $duration, int $size): self
     {
         $this->successful = true;
         $this->duration = $duration;
+        $this->compiledSize = $size;
         $this->parsedFiles = $compiler->getParsedFiles();
         $this->compilerOptions = $compiler->getCompileOptions();
         return $this;
@@ -108,5 +114,10 @@ class Result
     public function hasAssetExistedBefore(): bool
     {
         return $this->assetExistedBefore;
+    }
+
+    public function getCompiledSize() : int
+    {
+        return $this->compiledSize;
     }
 }

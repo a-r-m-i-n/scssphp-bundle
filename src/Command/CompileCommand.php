@@ -14,7 +14,10 @@ class CompileCommand extends Command
 {
     protected static $defaultName = 'scssphp:compile';
 
-    private $choice = '';
+    /**
+     * @var string
+     */
+    private $choice;
 
     private $scssParser;
 
@@ -70,6 +73,8 @@ class CompileCommand extends Command
                     $this->choice
                 );
             }
+        } else {
+            throw new \RuntimeException('No SCSS assets configured!');
         }
     }
 
@@ -77,20 +82,42 @@ class CompileCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->getFormatter()->setStyle('success', new OutputFormatterStyle('green', null, ['bold']));
+        $io->getFormatter()->setStyle('notice', new OutputFormatterStyle('blue'));
         $config = $this->scssParser->getConfiguration();
+
+        if (!$input->isInteractive()) {
+            if (is_numeric($input->getArgument('asset')) && $input->getArgument('asset') !== '0') {
+                $assetList = '-> ' . implode(PHP_EOL . '-> ', array_keys($config['assets']));
+                throw new \RuntimeException(
+                    'In non-interactive mode you need to use the asset name instead of its number in list.' . PHP_EOL .
+                    'The following assets are available:' . PHP_EOL . $assetList
+                );
+            }
+            if ($input->getArgument('asset') === '0') {
+                $this->choice = 'all';
+            } else {
+                $this->choice = $input->getArgument('asset');
+            }
+        }
 
         $error = false;
         if ($this->choice !== 'all') {
-            $add = file_exists($this->scssParser->makeJob($this->choice)->getDestinationPath()) ? ' (and overwrite!)' : '';
-            $io->write('Compiling' . $add . ' "<comment>' . $this->choice . '</comment>"... ');
+            $confim = $io->confirm('Do you want to compile "<comment>' . $this->choice . '</comment>"?');
+            if (!$confim) {
+                $io->writeln('Aborted.');
+                return;
+            }
             $result = $this->parse($this->choice, $io);
             $error = !$result || !$result->isSuccessful();
         } else {
-            $io->writeln('Start with compiling all ' . count($config['assets']) . ' SCSS sources...');
+            $confim = $io->confirm(
+                'Do you want to compile <comment>' . count($config['assets']) . ' assets</comment>?'
+            );
+            if (!$confim) {
+                $io->writeln('Aborted.');
+                return;
+            }
             foreach (array_keys($config['assets']) as $assetName) {
-                $add = file_exists($this->scssParser->makeJob($assetName)->getDestinationPath())
-                        ? ' (and overwrite!)' : '';
-                $io->write(' -> compiling' . $add . ' "<comment>' . $assetName . '</comment>"... ');
                 $result = $this->parse($assetName, $io);
                 if (!$result || !$result->isSuccessful()) {
                     $error = true;
@@ -104,12 +131,18 @@ class CompileCommand extends Command
 
     protected function parse(string $assetName, SymfonyStyle $io): ?Result
     {
+        $add = file_exists($this->scssParser->makeJob($assetName)->getDestinationPath()) ? ' (and overwriting!)' : '';
+        $io->write('Compiling' . $add . ' "<comment>' . $assetName . '</comment>"... ');
         $this->scssParser->parse($assetName, true);
         if ($result = $this->scssParser->getResult($assetName)) {
             $io->write($result->isSuccessful() ? '<success>OK</success>' : '<error>ERROR</error>');
             $io->writeln(' (' . round($result->getDuration(), 3) . 's)');
             if (!$result->isSuccessful()) {
                 $io->error('Error during compiling "' . $assetName . '"' . PHP_EOL . $result->getErrorMessage());
+            } else {
+                $size = round($result->getCompiledSize() / 1024, 1);
+                $io->writeln('<notice>Written ' . $size . ' KB to ' .
+                              $result->getJob()->getDestinationPath() . '</notice>');
             }
         }
         return $result;
