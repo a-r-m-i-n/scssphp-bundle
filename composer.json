@@ -1,6 +1,6 @@
 {
     "name": "armin/scssphp-bundle",
-    "version": "dev-master",
+    "version": "1.0.0",
     "type": "symfony-bundle",
     "description": "Symfony bundle to parse scss sources at runtime.",
     "license": "MIT",
