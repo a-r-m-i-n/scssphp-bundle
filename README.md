@@ -1,14 +1,15 @@
 # ScssPHP - Symfony Bundle
 
-This bundle for Symfony Framework, integrates the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
+This bundle for Symfony Framework 4, includes the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
 package, which allows you to parse SCSS sources (like Bootstrap) in your application, without need
-of Node.js and npm (pure PHP power)!
+of Node.js and npm!
 
 The ScssPHP bundle can recognize changes in SCSS source files (or Symfony configuration) automatically
-and only re-compiles those files.  
+and only re-compiles those files. So, when you change something in your SCSS sources and refresh the application 
+you see the results, instantly. You can disable this for the production environment.
 
-Also it provides a helpful debugger toolbar entry and a command which allows you 
-to compile the SCSS sources from CLI.
+Also, it provides a helpful debugger toolbar entry and a command which allows you to compile the SCSS sources 
+from CLI.
 
 It is released under MIT license.
 
@@ -17,11 +18,11 @@ It is released under MIT license.
 
 - Compile SCSS sources (like the [Bootstrap](https://getbootstrap.com/) framework) **with pure PHP** (thanks to [scssphp/scssphp](https://github.com/scssphp/scssphp))
 - Simple but powerful asset configuration (e.g. set variable values)
-- Several output formatter available (nested, compressed, crushed, etc.)
+- Several output-formatter available (nested, compressed, crushed, etc.)
 - Inline source map support
 - Profiler Toolbar Debugging
 - Symfony Command to compile SCSS sources on CLI
-- Auto update, when sources (or configuration) changes
+- Auto-update, when sources (or configuration) changes
 
 
 ## Screenshots
@@ -30,7 +31,7 @@ It is released under MIT license.
 
 ![ScssPHP in Symfony's profiler toolbar](docs/images/profiler-toolbar.png "ScssPHP in Symfony's profiler toolbar")
 
-**Hovering over ScssPHP profilder toolbar entry:**
+**Hovering over ScssPHP profiler toolbar entry:**
 
 ![Hovering over ScssPHP profiler toolbar entry.](docs/images/profiler-toolbar-hover.png "Hovering over ScssPHP profiler toolbar entry.")
 
@@ -70,11 +71,20 @@ $ composer require armin/scssphp-bundle
 The bundle also ships a [Symfony Flex Recipe](https://github.com/symfony/recipes-contrib/tree/master/armin/scssphp-bundle/1.0).
 
 
-## Configuration
+## Usage and configuration
 
-### Example
+The scssphp bundle is triggered, when you use the `{{ asset("...") }}` function in your Twig templates,
+and the requested asset is configured in `scssphp.assets` and `scssphp.enabled` is `true`.
 
-For this examples you also need to require the Bootstrap CSS framework:
+**Example asset call in twig:**
+
+```html
+<link href="{{ asset('styles/main.css') }}" rel="stylesheet">
+```
+
+### Example configuration
+
+For this example you also need to require the Bootstrap CSS framework:
 
 ```bash
 $ composer require twbs/bootstrap:"^4.0"
