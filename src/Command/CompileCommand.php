@@ -21,6 +21,8 @@ class CompileCommand extends Command
 
     private $scssParser;
 
+    private $interacted = false;
+
     public function __construct(string $name = null, Parser $scssParser = null)
     {
         parent::__construct($name);
@@ -39,42 +41,48 @@ class CompileCommand extends Command
         ;
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $config = $this->scssParser->getConfiguration();
+        if (!isset($config['assets']) || count($config['assets']) === 0) {
+            throw new \RuntimeException('No SCSS assets configured!');
+        }
+    }
+
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
         $config = $this->scssParser->getConfiguration();
 
         $this->choice = $input->getArgument('asset') ?? 'all';
-        if (count($config['assets']) > 0) {
-            $choices = ['all'];
-            foreach (array_keys($config['assets']) as $assetName) {
-                $choices[] = $assetName;
-            }
 
-            // On invalid input
-            $forceAsking = false;
-            if (is_numeric($this->choice)) {
-                $this->choice = (int) $this->choice;
-                if (!isset($choices[$this->choice])) {
-                    $forceAsking = true;
-                    $this->choice = 'all';
-                } else {
-                    $this->choice = $choices[$this->choice];
-                }
-            } elseif (!in_array($this->choice, $choices, true)) {
+        $choices = ['all'];
+        foreach (array_keys($config['assets']) as $assetName) {
+            $choices[] = $assetName;
+        }
+
+        // On invalid input
+        $forceAsking = false;
+        if (is_numeric($this->choice)) {
+            $this->choice = (int) $this->choice;
+            if (!isset($choices[$this->choice])) {
                 $forceAsking = true;
                 $this->choice = 'all';
+            } else {
+                $this->choice = $choices[$this->choice];
             }
+        } elseif (!in_array($this->choice, $choices, true)) {
+            $forceAsking = true;
+            $this->choice = 'all';
+        }
 
-            if ($forceAsking || (!$input->getArgument('asset') && $input->getArgument('asset') !== '0')) {
-                $this->choice = $io->choice(
-                    'There are several assets configured. Which one do you want to compile?',
-                    $choices,
-                    $this->choice
-                );
-            }
-        } else {
-            throw new \RuntimeException('No SCSS assets configured!');
+        if ($forceAsking || (!$input->getArgument('asset') && $input->getArgument('asset') !== '0')) {
+            $this->choice = $io->choice(
+                'There are several assets configured. Which one do you want to compile?',
+                $choices,
+                $this->choice
+            );
+            $this->interacted = true;
         }
     }
 
@@ -102,18 +110,20 @@ class CompileCommand extends Command
 
         $error = false;
         if ($this->choice !== 'all') {
-            $confim = $io->confirm('Do you want to compile "<comment>' . $this->choice . '</comment>"?');
-            if (!$confim) {
+            $confirm = !$this->interacted
+                ? $io->confirm('Do you want to compile "<comment>' . $this->choice . '</comment>"?')
+                : true;
+            if (!$confirm) {
                 $io->writeln('Aborted.');
                 return;
             }
             $result = $this->parse($this->choice, $io);
             $error = !$result || !$result->isSuccessful();
         } else {
-            $confim = $io->confirm(
-                'Do you want to compile <comment>' . count($config['assets']) . ' assets</comment>?'
-            );
-            if (!$confim) {
+            $confirm = !$this->interacted
+                ? $io->confirm('Do you want to compile <comment>' . count($config['assets']) . ' assets</comment>?')
+                : true;
+            if (!$confirm) {
                 $io->writeln('Aborted.');
                 return;
             }
