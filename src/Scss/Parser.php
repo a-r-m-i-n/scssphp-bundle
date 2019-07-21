@@ -66,11 +66,11 @@ class Parser
                 if ($this->checkForUpdates($cachedResult, $assetConfig)) {
                     $this->compileScss($job, $cacheItem);
                 }
-                return $assetName;
+                return '/' . ltrim($assetName, '/');
             }
         }
         $this->compileScss($job, $cacheItem);
-        return $assetName;
+        return '/' . ltrim($assetName, '/');
     }
 
     private function checkForUpdates(Result $result, array $assetConfiguration)
