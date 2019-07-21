@@ -45,7 +45,7 @@ class CompileCommand extends Command
         $config = $this->scssParser->getConfiguration();
 
         $this->choice = $input->getArgument('asset') ?? 'all';
-        if (count($config['assets']) > 1) {
+        if (count($config['assets']) > 0) {
             $choices = ['all'];
             foreach (array_keys($config['assets']) as $assetName) {
                 $choices[] = $assetName;

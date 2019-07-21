@@ -22,7 +22,9 @@ class AssetExtension extends \Symfony\Bridge\Twig\Extension\AssetExtension
         if ($this->scssParser->isEnabled() && $this->scssParser->isConfigured($path)) {
             $assetPath = $this->scssParser->parse($path);
             $result = $this->scssParser->getResult($path);
-            if ($result && $result->getJob()->getConfiguration()['appendTimestamp']) {
+            if ($result && $result->getJob()->getConfiguration()['appendTimestamp'] &&
+                file_exists($result->getJob()->getDestinationPath())
+            ) {
                 return $assetPath . '?' . filemtime($result->getJob()->getDestinationPath());
             }
             return $assetPath;
