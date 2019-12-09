@@ -113,7 +113,7 @@
             <thead>
             <tr>
                 <th>Required asset</th>
-                <th>Existing</th>
+{#                <th>Existing</th>#}
                 <th>Built</th>
             </tr>
             </thead>
@@ -121,9 +121,9 @@
             {% for asset,info in collector.requiredAssets %}
                 <tr>
                     <td>{{ asset }}</td>
-                    <td>
-                        {{ include('@WebProfiler/Icon/' ~ (info.existed ? 'yes' : 'no') ~ '.svg') }}
-                    </td>
+{#                    <td>#}
+{#                        {{ include('@WebProfiler/Icon/' ~ (info.existed ? 'yes' : 'no') ~ '.svg') }}#}
+{#                    </td>#}
                     <td>{{ include('@WebProfiler/Icon/' ~ (info.built ? 'yes' : 'no') ~ '.svg') }}</td>
                 </tr>
             {% endfor %}

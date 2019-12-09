@@ -56,13 +56,13 @@ class ScssphpDataCollector extends DataCollector
         $requiredAssets = [];
         foreach ($request->attributes->get('requiredAssets', []) as $assetName) {
             $key = Parser::makeCacheKey($assetName);
-            $cacheItem = $this->cache->getItem($key);
-            /** @var Result $result */
-            $result = $cacheItem->get();
-            $requiredAssets[$assetName] = [
-                'existed' => $result->hasAssetExistedBefore(),
-                'built' => in_array($assetName, $builtAssets, true)
-            ];
+            $result = $cacheItems[$key];
+            if ($result) {
+                $requiredAssets[$assetName] = [
+                    'existed' => $result->hasAssetExistedBefore(),
+                    'built' => in_array($assetName, $builtAssets, true)
+                ];
+            }
         }
 
         // Collect composer.json (for version number)
