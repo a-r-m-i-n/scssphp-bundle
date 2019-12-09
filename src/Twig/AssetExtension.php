@@ -3,18 +3,31 @@ namespace Armin\ScssphpBundle\Twig;
 
 use Armin\ScssphpBundle\Scss\Parser;
 use Symfony\Component\Asset\Packages;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class AssetExtension extends \Symfony\Bridge\Twig\Extension\AssetExtension
+/**
+ * Adjusted copy of \Symfony\Bridge\Twig\Extension\AssetExtension
+ */
+final class AssetExtension extends AbstractExtension
 {
-    /**
-     * @var Parser
-     */
-    private $scssParser;
+    private $packages;
 
     public function __construct(Packages $packages, Parser $scssParser)
     {
-        parent::__construct($packages);
+        $this->packages = $packages;
         $this->scssParser = $scssParser;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('asset', [$this, 'getAssetUrl']),
+            new TwigFunction('asset_version', [$this, 'getAssetVersion']),
+        ];
     }
 
     public function getAssetUrl($path, $packageName = null)
@@ -29,6 +42,14 @@ class AssetExtension extends \Symfony\Bridge\Twig\Extension\AssetExtension
             }
             return $assetPath;
         }
-        return parent::getAssetUrl($path, $packageName);
+        return $this->packages->getUrl($path, $packageName);
+    }
+
+    /**
+     * Returns the version of an asset.
+     */
+    public function getAssetVersion(string $path, string $packageName = null): string
+    {
+        return $this->packages->getVersion($path, $packageName);
     }
 }
