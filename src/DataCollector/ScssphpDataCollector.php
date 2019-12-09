@@ -38,7 +38,7 @@ class ScssphpDataCollector extends DataCollector
         ];
     }
 
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         // Collect recent build from cache
         $cacheItems = [];
