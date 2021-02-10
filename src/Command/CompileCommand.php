@@ -137,6 +137,8 @@ class CompileCommand extends Command
         $style = $error ? 'error' : 'success';
         $io->writeln('<'. $style . '>Finished SCSS compiling ' .
                     ($error ? 'with errors!' : 'successfully.') . '</' . $style . '>');
+
+        return (int) $error;
     }
 
     protected function parse(string $assetName, SymfonyStyle $io): ?Result

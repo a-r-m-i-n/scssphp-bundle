@@ -1,6 +1,6 @@
 # ScssPHP - Symfony Bundle
 
-This bundle for Symfony Framework 4, includes the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
+This bundle for Symfony Framework 4 and 5, includes the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
 package, which allows you to parse SCSS sources (like Bootstrap) in your application, without need
 of Node.js and npm!
 
