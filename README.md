@@ -49,13 +49,13 @@ It is released under MIT license.
 
 **CLI command (with compiling error)**
 
-`$ php/bin console scssphp:compile`
+`$ php bin/console scssphp:compile`
 
 ![CLI command (with compiling error)](docs/images/command-with-error.png "CLI command (with compiling error)")
 
 **Non-interactive CLI command**
 
-`$ php/bin console scssphp:compile all -n`
+`$ php bin/console scssphp:compile all -n`
 
 ![Non-interactive CLI command](docs/images/command-no-interaction.png "Non-interactive CLI command")
 
