@@ -34,6 +34,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('assets')
                     ->info('List of SCSS assets, which should be compiled, when requested. Key is the asset name/path.')
+                    ->useAttributeAsKey('name')
                     ->normalizeKeys(false)
                     ->arrayPrototype()
                         ->children()
@@ -53,6 +54,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('variables')
                                 ->info('Array of scss variables, which should be used during compilation. ' .
                                     'Use key => value here.')
+                                ->useAttributeAsKey('name')
                                 ->scalarPrototype()->end()
                             ->end()
                             ->enumNode('formatter')
