@@ -86,7 +86,7 @@ class CompileCommand extends Command
         }
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->getFormatter()->setStyle('success', new OutputFormatterStyle('green', null, ['bold']));
@@ -115,7 +115,7 @@ class CompileCommand extends Command
                 : true;
             if (!$confirm) {
                 $io->writeln('Aborted.');
-                return;
+                return Command::INVALID;
             }
             $result = $this->parse($this->choice, $io);
             $error = !$result || !$result->isSuccessful();
@@ -125,7 +125,7 @@ class CompileCommand extends Command
                 : true;
             if (!$confirm) {
                 $io->writeln('Aborted.');
-                return;
+                return Command::INVALID;
             }
             foreach (array_keys($config['assets']) as $assetName) {
                 $result = $this->parse($assetName, $io);
