@@ -1,6 +1,6 @@
 # ScssPHP - Symfony Bundle
 
-This bundle for Symfony Framework 4 and 5, includes the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
+This bundle for Symfony Framework (4-6), includes the [scssphp/scssphp](https://github.com/scssphp/scssphp) 
 package, which allows you to parse SCSS sources (like Bootstrap) in your application, without need
 of Node.js and npm!
 
@@ -79,7 +79,7 @@ and the requested asset is configured in `scssphp.assets` and `scssphp.enabled` 
 **Example asset call in twig:**
 
 ```html
-<link href="{{ asset('styles/main.css') }}" rel="stylesheet">
+<link href="{{ asset('css/styles.css') }}" rel="stylesheet">
 ```
 
 ### Example configuration
@@ -87,12 +87,13 @@ and the requested asset is configured in `scssphp.assets` and `scssphp.enabled` 
 For this example you also need to require the Bootstrap CSS framework:
 
 ```bash
-$ composer require twbs/bootstrap:"^4.0"
+$ composer require twbs/bootstrap:"^5.0"
 ```
 
 ```yaml
 # config/packages/scssphp.yaml
 scssphp:
+    enabled: true
     assets:
         "css/styles.css":
             src: "assets/main.scss"
