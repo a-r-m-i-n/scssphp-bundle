@@ -134,14 +134,11 @@ scssphp:
             # Array of scss variables, which should be used during compilation. Use key => value here.
             variables:            []
 
-            # The formatter which should be used when creating CSS output.
-            formatter:            ScssPhp\ScssPhp\Formatter\Crunched 
+            # Expanded or compressed CSS output.
+            outputStyle:          compressed
             # One of: 
-            # - "ScssPhp\\ScssPhp\\Formatter\\Expanded"
-            # - "ScssPhp\\ScssPhp\\Formatter\\Nested"
-            # - "ScssPhp\\ScssPhp\\Formatter\\Compressed"
-            # - "ScssPhp\\ScssPhp\\Formatter\\Compact"
-            # - "ScssPhp\\ScssPhp\\Formatter\\Crunched"
+            # - "expanded"
+            # - "compressed"
 
             # When enabled, the CSS file contains inline sourceMap comments.
             sourceMap:            false
@@ -149,6 +146,12 @@ scssphp:
             # When enabled, the timestamp of the asset, will be appended as query string.
             appendTimestamp:      true
 ```
+
+## Upgrade notice
+
+Since version 2.0 the option "formatter" has been replaced by "outputStyle",
+which may have got values "expanded" or "compressed" (default).
+
 
 ## Support
 

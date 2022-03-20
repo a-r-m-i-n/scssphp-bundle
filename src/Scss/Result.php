@@ -2,6 +2,8 @@
 namespace Armin\ScssphpBundle\Scss;
 
 use ScssPhp\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Exception\ParserException;
+use ScssPhp\ScssPhp\Exception\SassException;
 
 class Result
 {
@@ -29,6 +31,11 @@ class Result
      * @var string
      */
     private $errorMessage;
+
+    /**
+     * @var array|null
+     */
+    private $errorSourcePosition = null;
 
     /**
      * @var array
@@ -67,12 +74,15 @@ class Result
         return $this;
     }
 
-    public function markAsFailed(\Exception $exception, float $duration): self
+    public function markAsFailed(SassException $exception, float $duration): self
     {
         $this->successful = false;
         $this->duration = $duration;
         $messageLines = explode("\n", $exception->getMessage());
         $this->errorMessage = reset($messageLines); // Get first line from exception message
+        if ($exception instanceof ParserException) {
+            $this->errorSourcePosition = $exception->getSourcePosition();
+        }
         return $this;
     }
 
@@ -108,7 +118,14 @@ class Result
 
     public function getErrorMessage(): ?string
     {
-        return $this->errorMessage;
+        $sourcePosition = $this->getErrorSourcePosition() !== null ? ' (' . implode(', ', $this->getErrorSourcePosition()) . ')' : '';
+
+        return $this->errorMessage . $sourcePosition;
+    }
+
+    public function getErrorSourcePosition(): ?array
+    {
+        return $this->errorSourcePosition;
     }
 
     public function hasAssetExistedBefore(): bool

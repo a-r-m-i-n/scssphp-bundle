@@ -6,6 +6,7 @@ use ScssPhp\ScssPhp\Formatter\Compressed;
 use ScssPhp\ScssPhp\Formatter\Crunched;
 use ScssPhp\ScssPhp\Formatter\Expanded;
 use ScssPhp\ScssPhp\Formatter\Nested;
+use ScssPhp\ScssPhp\OutputStyle;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -55,12 +56,17 @@ class Configuration implements ConfigurationInterface
                                     'Use key => value here.')
                                 ->scalarPrototype()->end()
                             ->end()
-                            ->enumNode('formatter')
-                                ->info('The formatter which should be used when creating CSS output.')
+                            ->enumNode('outputStyle')
+                                ->info('Expanded or compressed CSS output.')
                                 ->values([
-                                    Expanded::class, Nested::class, Compressed::class, Compact::class, Crunched::class
+                                    OutputStyle::EXPANDED,
+                                    OutputStyle::COMPRESSED,
                                 ])
-                                ->defaultValue(Crunched::class)
+                                ->defaultValue(OutputStyle::COMPRESSED)
+                                ->beforeNormalization()
+                                    ->ifInArray([Expanded::class, Nested::class, Compressed::class, Compact::class, Crunched::class])
+                                    ->then(function($v) { return OutputStyle::COMPRESSED; })
+                                ->end()
                             ->end()
                             ->booleanNode('sourceMap')
                                 ->info('When enabled, the CSS file contains inline sourceMap comments.')

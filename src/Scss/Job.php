@@ -2,7 +2,8 @@
 namespace Armin\ScssphpBundle\Scss;
 
 use ScssPhp\ScssPhp\Compiler;
-use ScssPhp\ScssPhp\Formatter\Crunched;
+use ScssPhp\ScssPhp\Exception\SassException;
+use ScssPhp\ScssPhp\OutputStyle;
 
 class Job
 {
@@ -79,8 +80,8 @@ class Job
 
         $compiler = new Compiler();
         $compiler->setImportPaths($this->getImportPaths());
-        $compiler->setVariables($this->configuration['variables'] ?? []);
-        $compiler->setFormatter($this->configuration['formatter'] ?? Crunched::class);
+        $compiler->addVariables($this->configuration['variables'] ?? []);
+        $compiler->setOutputStyle($this->configuration['outputStyle'] ?? OutputStyle::COMPRESSED);
         if ($this->configuration['sourceMap']) {
             $compiler->setSourceMap(Compiler::SOURCE_MAP_INLINE);
         }
@@ -88,11 +89,14 @@ class Job
         $result = new Result($this);
 
         try {
-            $css = $compiler->compile(
+            $compilerResult = $compiler->compileString(
                 '@import "' . basename($this->sourceFilePath) . '";',
                 dirname($this->sourceFilePath)
             );
-        } catch (\Exception $exception) {
+
+            $css = $compilerResult->getCss();
+
+        } catch (SassException $exception) {
             return $result->markAsFailed($exception, microtime(true) - $timeTrackingStart);
         }
 
