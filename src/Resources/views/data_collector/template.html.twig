@@ -1,5 +1,18 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
+{% block head %}
+    {{ parent() }}
+    <style>
+        tr.error-message a {
+            color: var(--color-error);
+            text-decoration: underline;
+        }
+        tr.error-message a:hover {
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
 {% block toolbar %}
     {% if collector.hasConfig() %}
         {% set status_color = collector.hasErrors() ? 'red' : '' %}
@@ -80,7 +93,7 @@
     <div class="metrics">
         <div class="metric">
             <span class="value">{{ collector.scssphpVersion }}</span>
-            <span class="label">Version</span>
+            <span class="label">Bundle Version</span>
         </div>
         <div class="metric">
             <span class="value">{{ include('@WebProfiler/Icon/' ~ (collector.config.enabled ? 'yes' : 'no') ~ '.svg') }}</span>
@@ -113,7 +126,6 @@
             <thead>
             <tr>
                 <th>Required asset</th>
-{#                <th>Existing</th>#}
                 <th>Built</th>
             </tr>
             </thead>
@@ -121,9 +133,6 @@
             {% for asset,info in collector.requiredAssets %}
                 <tr>
                     <td>{{ asset }}</td>
-{#                    <td>#}
-{#                        {{ include('@WebProfiler/Icon/' ~ (info.existed ? 'yes' : 'no') ~ '.svg') }}#}
-{#                    </td>#}
                     <td>{{ include('@WebProfiler/Icon/' ~ (info.built ? 'yes' : 'no') ~ '.svg') }}</td>
                 </tr>
             {% endfor %}
@@ -156,7 +165,7 @@
             {% set assetRequired = result.job.assetName in collector.requiredAssets|keys %}
             {% set assetBuilt = result.job.assetName in collector.builtAssets %}
 
-            <tr class="{{ result.isSuccessful ? '' : 'no-bottom-border bg-error' }} {{ assetRequired ? '' : 'bg-gray' }}">
+            <tr class="{{ result.isSuccessful ? '' : 'no-bottom-border bg-error error-message' }} {{ assetRequired ? '' : 'bg-gray' }}">
                 <td>
                     <span title="{{ result.job.destinationPath }}">
                         <a href="/{{ result.job.assetName }}" target="_blank">{{ result.job.assetName }}</a>
