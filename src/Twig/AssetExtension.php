@@ -12,6 +12,7 @@ use Twig\TwigFunction;
 final class AssetExtension extends AbstractExtension
 {
     private $packages;
+    private $scssParser;
 
     public function __construct(Packages $packages, Parser $scssParser)
     {
